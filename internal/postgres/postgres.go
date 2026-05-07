@@ -22,6 +22,8 @@ func NewPostgres(logg *zap.Logger, cfg config.Postgres) (*sql.DB, error) {
 		return nil, fmt.Errorf("ошибка соединения с postgres: %w", err)
 	}
 
+	logg.Info("постгрес запущен")
+
 	return postgres, nil
 }
 

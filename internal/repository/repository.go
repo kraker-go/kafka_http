@@ -12,7 +12,8 @@ func NewMovieRepo(db *sql.DB) *MovieRepo {
 	return &MovieRepo{db: db}
 }
 
-const create = "INSERT INTO movies (title, year, genre) VALUES ($1, $2, $3)returning id"
+// константы запросов
+const create = "INSERT INTO movies (title, year, genre) VALUES ($1, $2, $3) returning id"
 const get_movie_title = "SELECT id, title, year, genre FROM movies WHERE title = $1"
 const get_all = "SELECT id, title, year, genre FROM movies"
 const get_movie_id = "SELECT id, title, year, genre FROM movies WHERE id = $1"

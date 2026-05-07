@@ -12,6 +12,5 @@ func main() {
 		log.Fatal(err)
 	}
 
-	app.Run(logg)
-
+	err = app.Run(logg)
 }

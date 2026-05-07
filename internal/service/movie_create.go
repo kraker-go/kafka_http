@@ -16,16 +16,15 @@ func (s *MovieService) CreateMovie(ctx context.Context, movie *domain.Movie) err
 	}
 
 	err := s.repo.CreateMovie(ctx, movie)
+	if err != nil {
+
+		return fmt.Errorf("service: ошибка создания фильма %w", err)
+	}
 
 	msg := []byte(fmt.Sprintf("Movie Created: %s", movie.Title))
 
 	if err = s.producer.Send(ctx, msg); err != nil {
 		return fmt.Errorf("service: kafka ошибка: %w", err)
-	}
-
-	if err != nil {
-
-		return fmt.Errorf("service: ошибка создания фильма %w", err)
 	}
 
 	return nil
