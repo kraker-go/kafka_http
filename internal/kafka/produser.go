@@ -12,7 +12,7 @@ type KafkaProducer struct {
 func NewKafkaProducer() *KafkaProducer {
 	return &KafkaProducer{
 		write: &kafka.Writer{
-			Addr:     kafka.TCP("localhost:9092"),
+			Addr:     kafka.TCP("127.0.0.1:9092"),
 			Topic:    "movies",
 			Balancer: &kafka.LeastBytes{},
 		},

@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"kafka_http/internal/cache"
 	"kafka_http/internal/domain"
 	"kafka_http/internal/kafka"
 )
@@ -17,8 +18,9 @@ type MovieCRUD interface {
 type MovieService struct {
 	repo     MovieCRUD
 	producer *kafka.KafkaProducer
+	c        *cache.MovieCache
 }
 
-func NewMovieService(repo MovieCRUD, prod *kafka.KafkaProducer) *MovieService {
-	return &MovieService{repo: repo, producer: prod}
+func NewMovieService(repo MovieCRUD, prod *kafka.KafkaProducer, cache *cache.MovieCache) *MovieService {
+	return &MovieService{repo: repo, producer: prod, c: cache}
 }

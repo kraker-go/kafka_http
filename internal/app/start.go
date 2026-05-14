@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"go.uber.org/zap"
 	"kafka_http/config"
+	"kafka_http/internal/cache"
 	"kafka_http/internal/handler"
 	"kafka_http/internal/kafka"
 	"kafka_http/internal/postgres"
+	"kafka_http/internal/redis"
 	"kafka_http/internal/repository"
 	"kafka_http/internal/router"
 	"kafka_http/internal/service"
@@ -45,11 +47,21 @@ func Run(logg *zap.Logger) error {
 
 	go func() {
 		consumer := kafka.NewKafkaConsumer()
-		consumer.Start(ctx, logg)
+		if err := consumer.Start(ctx, logg); err != nil {
+			logg.Error("consumer stopped", zap.Error(err))
+		}
 	}()
 
+	red := redis.InitRedis()
+	_ = redis.Ping(red)
+	if err != nil {
+		fmt.Errorf("redis: связь отсутствует %w", err)
+	}
+
+	movieCache := cache.NewMovieCache(red)
+
 	repo := repository.NewMovieRepo(postgresDB)
-	serv := service.NewMovieService(repo, producer)
+	serv := service.NewMovieService(repo, producer, movieCache)
 	hand := handler.NewMovieHandler(serv, logg)
 
 	router := router.NewRouter(hand)
