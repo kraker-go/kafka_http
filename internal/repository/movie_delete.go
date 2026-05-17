@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"kafka_http/internal/domain"
 )
@@ -11,7 +12,7 @@ func (m *MovieRepo) DeleteMovie(ctx context.Context, id int) error {
 	var check domain.Movie
 	err := m.db.QueryRowContext(ctx, delete, id).Scan(&check.ID)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return domain.ErrorMovieNotFound
 		}
 		return fmt.Errorf("ошибка запроса в бд %w", err)

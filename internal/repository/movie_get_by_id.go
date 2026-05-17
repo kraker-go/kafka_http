@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"kafka_http/internal/domain"
 )
@@ -12,7 +13,7 @@ func (m *MovieRepo) GetMovieByID(ctx context.Context, id int) (domain.Movie, err
 
 	err := m.db.QueryRowContext(ctx, get_movie_id, id).Scan(&movie.ID, &movie.Title, &movie.Year, &movie.Genre)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return domain.Movie{}, domain.ErrorMovieNotFound
 		}
 

@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"kafka_http/internal/domain"
 )
@@ -18,7 +19,7 @@ func (m *MovieRepo) UpdateMovie(ctx context.Context, ID int, movie *domain.Movie
 
 	err = tx.QueryRowContext(ctx, get_movie_id, ID).Scan(&check.ID, &check.Title, &check.Year, &check.Genre)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return &domain.Movie{}, domain.ErrorMovieNotFound
 		}
 		return &domain.Movie{}, fmt.Errorf("repository: ошибка проверки обновления данных %w", err)

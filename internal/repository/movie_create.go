@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"kafka_http/internal/domain"
 )
@@ -18,7 +19,7 @@ func (m *MovieRepo) CreateMovie(ctx context.Context, movie *domain.Movie) error 
 
 	err = tx.QueryRowContext(ctx, get_movie_title, movie.Title).Scan(&check.ID, &check.Title, &check.Year, &check.Genre)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			err = tx.QueryRowContext(ctx, create, movie.Title, movie.Year, movie.Genre).Scan(&movie.ID)
 			if err != nil {
 				return fmt.Errorf("repository: ошибка создания фильма: %w", err)

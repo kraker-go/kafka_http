@@ -8,12 +8,14 @@ import (
 	"kafka_http/internal/cache"
 	"kafka_http/internal/handler"
 	"kafka_http/internal/kafka"
+	"kafka_http/internal/logger"
 	"kafka_http/internal/postgres"
 	"kafka_http/internal/redis"
 	"kafka_http/internal/repository"
 	"kafka_http/internal/router"
 	"kafka_http/internal/service"
 	"kafka_http/server"
+	"net/http"
 )
 
 func Run(logg *zap.Logger) error {
@@ -65,13 +67,22 @@ func Run(logg *zap.Logger) error {
 	hand := handler.NewMovieHandler(serv, logg)
 
 	router := router.NewRouter(hand)
+	router.Use(logger.RequestIDMiddleware)
+	router.Use(logger.LoggerMiddleware(logg))
+
+	servUp := server.NewServer(port.Port, logg, router)
+
+	go server.Shutdown(logg, servUp)
 
 	logg.Info("Сервер запущен")
 
-	err = server.NewServer(port.Port, logg, router)
-	if err != nil {
-		return fmt.Errorf("ошибка запуска сервер %w", err)
-	}
+	if err := servUp.ListenAndServe(); err != nil &&
+		err != http.ErrServerClosed {
 
+		return fmt.Errorf(
+			"ошибка запуска сервер %w",
+			err,
+		)
+	}
 	return nil
 }

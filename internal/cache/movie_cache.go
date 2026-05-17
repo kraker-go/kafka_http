@@ -4,10 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/redis/go-redis/v9"
 	"kafka_http/internal/domain"
 	"time"
-
-	"github.com/redis/go-redis/v9"
 )
 
 type MovieCache struct {

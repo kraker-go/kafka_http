@@ -9,6 +9,7 @@ require (
 )
 
 require (
+	github.com/google/uuid v1.6.0
 	github.com/gorilla/mux v1.8.1
 	github.com/pressly/goose/v3 v3.20.0
 	github.com/redis/go-redis/v9 v9.19.0
